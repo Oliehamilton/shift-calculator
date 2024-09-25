@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shift End Time Calculator</title>
+    <script>
+        function calculateShiftEnd() {
+            // Get input values from the form
+            let punchIn = document.getElementById("punchIn").value;
+            let lunchOut = document.getElementById("lunchOut").value;
+            let lunchIn = document.getElementById("lunchIn").value;
+            let isShortDay = document.getElementById("shortDay").checked;
+
+            // Shift duration (7 hours for short day, 8 hours for normal day)
+            let shiftDuration = isShortDay ? 7 : 8;
+
+            // Parse the time inputs into Date objects
+            let punchInTime = new Date(`1970-01-01T${punchIn}:00`);
+            let lunchOutTime = new Date(`1970-01-01T${lunchOut}:00`);
+            let lunchInTime = new Date(`1970-01-01T${lunchIn}:00`);
+
+            // Calculate break duration
+            let breakDuration = (lunchInTime - lunchOutTime) / (1000 * 60 * 60); // in hours
+
+            // Calculate shift end time
+            let totalHours = shiftDuration + breakDuration;
+            let shiftEndTime = new Date(punchInTime.getTime() + totalHours * 60 * 60 * 1000);
+
+            // Format shift end time
+            let hours = shiftEndTime.getHours().toString().padStart(2, "0");
+            let minutes = shiftEndTime.getMinutes().toString().padStart(2, "0");
+
+            // Display result
+            document.getElementById("result").innerText = `Your shift will end at: ${hours}:${minutes}`;
+        }
+    </script>
+</head>
+<body>
+    <h2>Shift End Time Calculator</h2>
+    
+    <form onsubmit="event.preventDefault(); calculateShiftEnd();">
+        <label for="punchIn">Punch-In Time (HH:MM):</label>
+        <input type="time" id="punchIn" required><br><br>
+
+        <label for="lunchOut">Lunch Punch-Out Time (HH:MM):</label>
+        <input type="time" id="lunchOut" required><br><br>
+
+        <label for="lunchIn">Lunch Punch-In Time (HH:MM):</label>
+        <input type="time" id="lunchIn" required><br><br>
+
+        <input type="checkbox" id="shortDay">
+        <label for="shortDay">Is today a short day? (7 hours shift)</label><br><br>
+
+        <button type="submit">Calculate End Time</button>
+    </form>
+
+    <p id="result"></p>
+</body>
+</html>
