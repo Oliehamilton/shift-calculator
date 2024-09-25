@@ -9,4 +9,5 @@ The Shift End Time Calculator is a simple and user-friendly web tool designed to
 	•	Responsive Design: The webpage is accessible on both desktop and mobile devices, providing a seamless experience across platforms.
 
 **Data Privacy and Ethical Considerations**
+
 This web tool is hosted on GitHub Pages, and no data is collected, stored, or shared. All calculations happen locally in the user’s browser, ensuring that personal information remains private. There is no backend server or external data processing involved.
