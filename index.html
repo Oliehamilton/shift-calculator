@@ -5,26 +5,72 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shift End Time Calculator</title>
     <script>
+        function addLunchBreak() {
+            const lunchBreakContainer = document.getElementById('lunchBreakContainer');
+
+            // Create new div for the lunch break
+            const newBreakDiv = document.createElement('div');
+            newBreakDiv.classList.add('lunch-break');
+
+            const lunchOutLabel = document.createElement('label');
+            lunchOutLabel.innerHTML = 'Lunch Punch-Out Time (HH:MM):';
+            const lunchOutInput = document.createElement('input');
+            lunchOutInput.type = 'time';
+            lunchOutInput.classList.add('lunchOut');
+            lunchOutInput.required = true;
+
+            const lunchInLabel = document.createElement('label');
+            lunchInLabel.innerHTML = 'Lunch Punch-In Time (HH:MM):';
+            const lunchInInput = document.createElement('input');
+            lunchInInput.type = 'time';
+            lunchInInput.classList.add('lunchIn');
+            lunchInInput.required = true;
+
+            // Create the delete button
+            const deleteButton = document.createElement('button');
+            deleteButton.type = 'button';
+            deleteButton.innerText = 'Delete Lunch Break';
+            deleteButton.onclick = function () {
+                lunchBreakContainer.removeChild(newBreakDiv);
+            };
+
+            // Add the inputs and delete button to the new div
+            newBreakDiv.appendChild(lunchOutLabel);
+            newBreakDiv.appendChild(lunchOutInput);
+            newBreakDiv.appendChild(lunchInLabel);
+            newBreakDiv.appendChild(lunchInInput);
+            newBreakDiv.appendChild(deleteButton);
+
+            // Add the new lunch break div to the container
+            lunchBreakContainer.appendChild(newBreakDiv);
+        }
+
         function calculateShiftEnd() {
-            // Get input values from the form
+            // Get punch-in time and short day flag
             let punchIn = document.getElementById("punchIn").value;
-            let lunchOut = document.getElementById("lunchOut").value;
-            let lunchIn = document.getElementById("lunchIn").value;
             let isShortDay = document.getElementById("shortDay").checked;
 
             // Shift duration (7 hours for short day, 8 hours for normal day)
             let shiftDuration = isShortDay ? 7 : 8;
 
-            // Parse the time inputs into Date objects
+            // Parse the punch-in time
             let punchInTime = new Date(`1970-01-01T${punchIn}:00`);
-            let lunchOutTime = new Date(`1970-01-01T${lunchOut}:00`);
-            let lunchInTime = new Date(`1970-01-01T${lunchIn}:00`);
 
-            // Calculate break duration
-            let breakDuration = (lunchInTime - lunchOutTime) / (1000 * 60 * 60); // in hours
+            // Calculate total break duration
+            let totalBreakDuration = 0;
+
+            const lunchOutTimes = document.getElementsByClassName('lunchOut');
+            const lunchInTimes = document.getElementsByClassName('lunchIn');
+
+            for (let i = 0; i < lunchOutTimes.length; i++) {
+                const lunchOutTime = new Date(`1970-01-01T${lunchOutTimes[i].value}:00`);
+                const lunchInTime = new Date(`1970-01-01T${lunchInTimes[i].value}:00`);
+                const breakDuration = (lunchInTime - lunchOutTime) / (1000 * 60 * 60); // in hours
+                totalBreakDuration += breakDuration;
+            }
 
             // Calculate shift end time
-            let totalHours = shiftDuration + breakDuration;
+            let totalHours = shiftDuration + totalBreakDuration;
             let shiftEndTime = new Date(punchInTime.getTime() + totalHours * 60 * 60 * 1000);
 
             // Format shift end time
@@ -38,16 +84,22 @@
 </head>
 <body>
     <h2>Shift End Time Calculator</h2>
-    
+
     <form onsubmit="event.preventDefault(); calculateShiftEnd();">
         <label for="punchIn">Punch-In Time (HH:MM):</label>
         <input type="time" id="punchIn" required><br><br>
 
-        <label for="lunchOut">Lunch Punch-Out Time (HH:MM):</label>
-        <input type="time" id="lunchOut" required><br><br>
+        <div id="lunchBreakContainer">
+            <div class="lunch-break">
+                <label for="lunchOut">Lunch Punch-Out Time (HH:MM):</label>
+                <input type="time" class="lunchOut" required><br><br>
 
-        <label for="lunchIn">Lunch Punch-In Time (HH:MM):</label>
-        <input type="time" id="lunchIn" required><br><br>
+                <label for="lunchIn">Lunch Punch-In Time (HH:MM):</label>
+                <input type="time" class="lunchIn" required><br><br>
+            </div>
+        </div>
+
+        <button type="button" onclick="addLunchBreak()">Add Another Lunch Break</button><br><br>
 
         <input type="checkbox" id="shortDay">
         <label for="shortDay">Is today a short day? (7 hours shift)</label><br><br>
