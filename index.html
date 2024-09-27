@@ -80,12 +80,37 @@
             // Display result
             document.getElementById("result").innerText = `Your shift will end at: ${hours}:${minutes}`;
         }
+
+        // Function to clear the form and restart
+        function clearForm() {
+            // Clear the user inputs but keep the form structure intact
+            document.getElementById("punchIn").value = ''; // Clear Punch-In Time
+            document.getElementById("shortDay").checked = false; // Reset the short day checkbox
+
+            // Clear the lunch breaks that are dynamically added
+            const lunchBreakContainer = document.getElementById('lunchBreakContainer');
+            const defaultLunchBreaks = lunchBreakContainer.getElementsByClassName('lunch-break');
+            
+            // Remove any dynamically added lunch breaks, keeping the first one intact
+            while (defaultLunchBreaks.length > 1) {
+                lunchBreakContainer.removeChild(defaultLunchBreaks[defaultLunchBreaks.length - 1]);
+            }
+
+            // Clear the inputs of the first lunch break
+            const firstLunchOut = document.querySelector('.lunchOut');
+            const firstLunchIn = document.querySelector('.lunchIn');
+            if (firstLunchOut) firstLunchOut.value = '';
+            if (firstLunchIn) firstLunchIn.value = '';
+
+            // Clear the result text
+            document.getElementById("result").innerText = '';
+        }
     </script>
 </head>
 <body>
     <h2>Shift End Time Calculator</h2>
 
-    <form onsubmit="event.preventDefault(); calculateShiftEnd();">
+    <form id="shiftForm" onsubmit="event.preventDefault(); calculateShiftEnd();">
         <label for="punchIn">Punch-In Time (HH:MM):</label>
         <input type="time" id="punchIn" required><br><br>
 
@@ -105,6 +130,7 @@
         <label for="shortDay">Is today a short day? (7 hours shift)</label><br><br>
 
         <button type="submit">Calculate End Time</button>
+        <button type="button" onclick="clearForm()">Clear/Restart</button>
     </form>
 
     <p id="result"></p>
